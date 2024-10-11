@@ -79,7 +79,7 @@ pipeline {
                                 sudo docker pull ${HARBOR_REPO}/heim/${IMAGE_NAME}:latest &&
                                 sudo docker stop web-back || true &&
                                 sudo docker rm web-back || true &&
-                                sudo docker run -d --name web-back -p 3000:3000 ${HARBOR_REPO}/heim/${IMAGE_NAME}:latest
+                                sudo docker run -d --name web-back -p 3000:3000 ${HARBOR_REPO}/heim/${IMAGE_NAME}:${env.BUILD_ID}
                             '
                             """
                         }
