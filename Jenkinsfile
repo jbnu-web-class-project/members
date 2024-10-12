@@ -26,16 +26,25 @@ pipeline {
 
     environment {
         REGISTRY_CREDENTIALS = 'harbor-id'
-        IMAGE_NAME = 'web-back'
+        IMAGE_NAME = 'web-back-k8s'
         GITHUB_REPO = 'https://github.com/jbnu-web-class-project/backend.git'
         HARBOR_URL = credentials('harbor-url')
         HARBOR_REPO = credentials('harbor-repo')
-        APP_SERVER_IP = credentials('ssh-ip')
-        PORT = credentials('ssh-port')
-        SSH_CREDENTIALS_ID = 'ssh-key'
+        MANIFEST_REPO = 'git@github.com:jbnu-web-class-project/k8s-manifest.git'
+        SSH_CREDENTIALS_ID = 'github-ssh'
     }
 
     stages {
+        stage('Setup SSH') {
+            steps {
+                script {
+                    sh 'mkdir -p ~/.ssh && chmod 700 ~/.ssh'
+                    sh 'ssh-keyscan github.com >> ~/.ssh/known_hosts'
+                    sh 'chmod 644 ~/.ssh/known_hosts'
+                }
+            }
+        }
+
         stage('Clone Repository') {
             steps {
                 git url: GITHUB_REPO, branch: 'main', credentialsId: 'web-service-pj-token'
@@ -45,7 +54,6 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // docker 컨테이너에서 docker build 실행
                     container('docker') {
                         sh "docker build -t heim/${IMAGE_NAME}:${env.BUILD_ID} ."
                     }
@@ -67,20 +75,23 @@ pipeline {
             }
         }
 
-        stage('Deploy to Application Server') {
+        stage('Update Kubernetes Manifest') {
             steps {
                 script {
-                    // SSH 키를 사용하여 서버에 연결
                     sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                        withCredentials([usernamePassword(credentialsId: 'harbor-id', passwordVariable: 'HARBOR_PASSWORD', usernameVariable: 'HARBOR_USERNAME')]) {
+                        // Kubernetes manifest 파일을 수정하고 Git 레포지토리에 푸시
+                        script {
+                            def gitCloneCommand = "git clone ${MANIFEST_REPO} k8s-manifest"
+                            sh gitCloneCommand
                             sh """
-                            ssh -o StrictHostKeyChecking=no ubuntu@${APP_SERVER_IP} -p ${PORT} '
-                                echo "${HARBOR_PASSWORD}" | sudo docker login ${HARBOR_URL} -u ${HARBOR_USERNAME} --password-stdin &&
-                                sudo docker pull ${HARBOR_REPO}/heim/${IMAGE_NAME}:latest &&
-                                sudo docker stop web-back || true &&
-                                sudo docker rm web-back || true &&
-                                sudo docker run -d --name web-back -p 3000:3000 ${HARBOR_REPO}/heim/${IMAGE_NAME}:${env.BUILD_ID}
-                            '
+                            cd k8s-manifest &&
+                            ls -l &&
+                            sed -i 's|image: .*\$|image: ${HARBOR_REPO}/heim/${IMAGE_NAME}:${env.BUILD_ID}|' web-back-deployment.yaml &&
+                            git config --global user.email "gjdhks1212@gmail.com"
+                            git config --global user.name "hodu26"
+                            git add web-back-deployment.yaml &&
+                            git commit -m 'update: update image to ${env.BUILD_ID}' &&
+                            git push --set-upstream origin main
                             """
                         }
                     }
@@ -88,7 +99,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
         always {
             cleanWs()
