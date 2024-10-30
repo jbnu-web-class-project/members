@@ -1,6 +1,9 @@
 # STEP 1: Build Stage
 FROM node:20-alpine AS builder
 
+# Install necessary build tools and libraries
+RUN apk add --no-cache python3 make g++
+
 # Create app directory
 WORKDIR /usr/src/app
 
@@ -8,7 +11,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install all dependencies (including dev dependencies)
-RUN npm install
+RUN npm install --verbose
 
 # Copy the rest of the application source code
 COPY . .
@@ -20,6 +23,9 @@ RUN npm run build
 
 # STEP 2: Production Stage
 FROM node:20-alpine
+
+# Install necessary build tools and libraries
+RUN apk add --no-cache python3 make g++
 
 # Create app directory
 WORKDIR /usr/src/app
