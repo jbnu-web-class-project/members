@@ -11,7 +11,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install all dependencies (including dev dependencies)
-RUN npm install --verbose
+RUN npm install
 
 # Copy the rest of the application source code
 COPY . .
@@ -31,7 +31,7 @@ RUN apk add --no-cache python3 make g++
 WORKDIR /usr/src/app
 
 # Set environment variable
-ENV NODE_ENV=production
+ENV NODE_ENV=prod
 
 # Copy only the necessary files from builder stage
 COPY --from=builder /usr/src/app/dist ./dist

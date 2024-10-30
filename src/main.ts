@@ -7,6 +7,7 @@ async function bootstrap() {
   // 모든 라우트의 기본 경로를 '/members'로 설정
   app.setGlobalPrefix('members');
   
+  app.enableCors();
   await app.listen(3000);
 }
 bootstrap();
