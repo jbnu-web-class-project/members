@@ -55,7 +55,7 @@ pipeline {
             steps {
                 script {
                     container('docker') {
-                        sh "docker build -t heim/${IMAGE_NAME}:${env.BUILD_ID} ."
+                        sh "docker build --network host -t heim/${IMAGE_NAME}:${env.BUILD_ID} ."
                     }
                 }
             }
