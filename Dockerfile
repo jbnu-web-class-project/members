@@ -33,6 +33,9 @@ WORKDIR /usr/src/app
 # Set environment variable
 ENV NODE_ENV=prod
 
+# Copy .env file from builder stage
+COPY --from=builder /usr/src/app/env ./env
+
 # Copy only the necessary files from builder stage
 COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/package*.json ./
