@@ -9,9 +9,8 @@ async function bootstrap() {
   
   // CORS 활성화
   app.enableCors({
-    origin: '*', // 허용할 도메인
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // 허용할 HTTP 메서드
-    allowedHeaders: 'Content-Type', // 허용할 헤더
+    origin: true,  // 모든 origin 허용
+    credentials: true
   });
   
   await app.listen(3000);
