@@ -49,7 +49,7 @@ export class AuthsController {
 
     if (token) {
       // 쿠키에 토큰 설정
-      res.cookie('accessToken', token, { httpOnly: true, sameSite: 'none', secure: true });
+      res.cookie('accessToken', token, { httpOnly: true, sameSite: 'none', secure: false });
 
       // 프로필 설정 여부에 따라 리다이렉트
       if (user.set_profile) {
@@ -78,7 +78,7 @@ export class AuthsController {
     const { token, user } = await this.authsService.signin(signInData);
     
     if (token) {
-      res.cookie('accessToken', token, { httpOnly: true, sameSite: 'none', secure: true });
+      res.cookie('accessToken', token, { httpOnly: true, sameSite: 'none', secure: false });
 
       return { token, user };
     }
@@ -92,7 +92,7 @@ export class AuthsController {
   @Post('logout')
   async logout(@Res({ passthrough: true }) res: Response) {
     // 쿠키에서 accessToken 삭제
-    res.clearCookie('accessToken', { httpOnly: true, sameSite: 'none', secure: true });
+    res.clearCookie('accessToken', { httpOnly: true, sameSite: 'none', secure: false });
 
     return { message: '로그아웃되었습니다.' };
   }
