@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import { IsEmail, IsString, Matches, MinLength, Length, IsOptional, IsBoolean, IsNegative, IsNumber } from "class-validator";
 
 export namespace AuthDto {
@@ -25,16 +26,30 @@ export namespace AuthDto {
     }
 
     export class SocialSignUp {
-        @IsNumber()
-        social_code: number;
-
+        @IsEmail()
+        email: string;
+        
         @IsString()
         @Length(1, 64)
         external_id: string;
 
         @IsString()
+        @Length(1, 64)
+        @IsOptional()
+        nickname?: string;
+
+        @IsNumber()
+        login_type: number;
+
+        @IsString()
         @Length(1, 256)
+        @Exclude()
         access_token: string;
+
+        @IsString()
+        @Length(1, 256)
+        @Exclude()
+        refresh_token: string;
     }
 
     export class SignIn {

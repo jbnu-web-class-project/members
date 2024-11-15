@@ -7,6 +7,7 @@ import { JWTConfig } from '../configs/jwt.config';
 import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { GoogleStrategy } from './strategy/google.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { UserProfile } from 'src/users/entities/user_profile.entity';
@@ -24,6 +25,6 @@ import { AuthLogin, AuthSocialLogin } from 'src/auths/entities/auth.entity';
     UsersModule
   ],
   controllers: [AuthsController],
-  providers: [AuthsService, JwtStrategy],
+  providers: [AuthsService, JwtStrategy, GoogleStrategy],
 })
 export class AuthsModule {}

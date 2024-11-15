@@ -14,13 +14,16 @@ enum LoginType {
 }
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'local') {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     constructor(
         private readonly configService: ConfigService,
         private readonly userService: UsersService,
     ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      // 쿠키에서 accessToken을 가져오는 부분으로 변경
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (req) => req.cookies['accessToken'], // 쿠키에서 accessToken 추출
+      ]),
       ignoreExpiration: false,
       secretOrKey: configService.get('JWT_SECRET'),
     })

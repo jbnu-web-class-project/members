@@ -22,9 +22,9 @@ export class UpdateProfileDto {
 
     @IsOptional()
     @IsNumber()
-    profile_sports?: number;
+    prefer_sports?: number;
 
     @IsOptional()
     @IsNumber()
-    profile_team?: number;
+    prefer_team?: number;
 }

@@ -1,7 +1,6 @@
 // auths.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, BeforeInsert, UpdateDateColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import * as bcrypt from 'bcrypt';
 
 // AuthSocialLogin 엔티티
 @Entity('auth_social_login')
@@ -13,14 +12,14 @@ export class AuthSocialLogin {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ type: 'varchar', length: 16 })
-  social_code: string;
+  @Column({ type: 'varchar', length: 64, unique: true })
+  email: string;
 
   @Column({ type: 'varchar', length: 64 })
   external_id: string;
 
-  @Column({ type: 'varchar', length: 256 })
-  access_token: string;
+  @Column({ type: 'varchar', length: 256, nullable: true })
+  refresh_token: string;
 
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   update_date: Date;
